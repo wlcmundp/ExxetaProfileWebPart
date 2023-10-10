@@ -312,7 +312,7 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
         Upn: this.state.profile.Upn,
         FirstName: this.state.profile.FirstName,
         LastName: this.state.profile.LastName,
-        Skills: this.state.profile.sk
+        Skills: this.state.profile.Skills
     }})
   }
 
