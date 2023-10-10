@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "exxeta-profile-web-part-client-side-solution",
+    "id": "105ab404-9305-4874-ac51-27ac957bdad4",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.17.2"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "exxeta-profile-web-part description"
+      },
+      "longDescription": {
+        "default": "exxeta-profile-web-part description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "exxeta-profile-web-part Feature",
+        "description": "The feature that activates elements of the exxeta-profile-web-part solution.",
+        "id": "00098282-837a-484c-bfc3-b9ba17ffab5a",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/exxeta-profile-web-part.sppkg"
+  }
+}
