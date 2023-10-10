@@ -4,17 +4,13 @@ import { IUserProfileProps } from './IUserProfileProps';
 
 // import interfaces
 import { IFile, IProfile, ISkill, IResponseItem } from "./interfaces";
-
 import { Caching } from "@pnp/queryable";
 import { getSP } from "../pnpjsConfig";
 import { SPFI, spfi } from "@pnp/sp";
 import { Logger, LogLevel } from "@pnp/logging";
-//import { FieldTextRenderer } from "@pnp/spfx-controls-react/lib/FieldTextRenderer";
-//import { IItemUpdateResult } from "@pnp/sp/items";
 import '@microsoft/sp-core-library';
 import '@pnp/sp/site-users'; 
 import "@pnp/sp/profiles"
-//import { Field } from '@pnp/sp/fields/types';
 
 export interface IAsyncAwaitPnPJsProps {
   description: string;
@@ -27,7 +23,7 @@ export interface IIPnPjsExampleState {
   skills: ISkill[],
   isOwnProfile: boolean;
   newSkillName: string;
-  isMock: boolean;
+  //isMock: boolean;
   errors: string[];
 }
 
@@ -35,7 +31,6 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
   private LOG_SOURCE = "🅿PnPjsExample";
   private LIBRARY_NAME = "Bilder";
   private _sp: SPFI;
-  //private newSkillName: string;
 
   constructor(props: IUserProfileProps) {
     super(props);
@@ -52,13 +47,14 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
       skills: [],      
       isOwnProfile: false,
       newSkillName: '',
-      isMock: true,
+      //isMock: true,
       errors: [],
     };
     this._sp = getSP();
 
     this.onNewSkillClick = this.onNewSkillClick.bind(this);
     this.skillChangeHandler = this.skillChangeHandler.bind(this);
+    this.btnSaveClicked = this.btnSaveClicked.bind(this);
   }
 
   public componentDidMount(): void {
@@ -68,17 +64,6 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
 
   public render(): React.ReactElement<IAsyncAwaitPnPJsProps> {
 
-    console.log('Profile skills: ')
-    console.log(this.state.profile.Skills)
-
-    //console.log('Items: ') 
-    //console.log(this.state.items);
-
-    // this.state.profile.Skills.push({
-    //   Id: 'Python',
-    //   Level: 'Novice'
-    // })
-    
     return (
       <div className={styles.userProfile}>
         
@@ -103,7 +88,6 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
 
         <div>
           <label>Add a new Skill</label>:<input type="text" id="newSkillName" value={this.state.newSkillName} onChange={this.skillChangeHandler} ></input>
-          {/* <FieldTextRenderer text={this.state.newSkillName} ></FieldTextRenderer> */}
           <button onClick={this.onNewSkillClick}>+ Add</button>
         </div>
 
@@ -117,30 +101,9 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
             })
           }
         </div>
-        
-        {/* <br />
-        <label>List of documents:</label>
-        <table width="100%">
-          <tr>
-            <td><strong>Title</strong></td>
-            <td><strong>Name</strong></td>
-            <td><strong>Size (KB)</strong></td>
-          </tr>
-          {this.state.items.map((item, idx) => {
-            return (
-              <tr key={idx}>
-                <td>{item.Title}</td>
-                <td>{item.Name}</td>
-                <td>{(item.Size / 1024).toFixed(2)}</td>
-              </tr>
-            );
-          })}
-          <tr>
-            <td></td>
-            <td><strong>Total:</strong></td>
-            <td><strong>{(totalDocs / 1024).toFixed(2)}</strong></td>
-          </tr>
-        </table> */}
+        <div>
+          <button type="button" onClick={this.btnSaveClicked} >Save Profile</button>
+        </div>
       </div >
     );
   }
@@ -166,11 +129,8 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
 
       const respProfile = await this._sp.web.currentUser(); //spCache.web.currentUser.get;
       const userUpn = respProfile.UserPrincipalName;
-      console.log('Current user: ' + respProfile.Email + ' - ' + respProfile.UserPrincipalName)
-
       const profileQsParam = this.getQueryStringParam('profile');
-      console.log('Current User PN from Querystring: ' + profileQsParam);
-
+      
       if(respProfile.UserPrincipalName == (profileQsParam + '@exxeta.com')){
         console.log('Success: this is the profile page of the current user')
       }
@@ -178,13 +138,14 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
         console.log('Fail: this is NOT the profile page of the current user')
       }
 
-      const profile = this.loadProfile(userUpn, this.state.isMock);
-      const skills = this.loadAllSkills(this.state.isMock);
-
+      const profile = await this.loadProfile('thomas.pohl@exxeta.com')//userUpn);
+      console.log('Profile : ');
+      console.log(profile);
       
+      const skills = await this.loadAllSkills();
+      console.log('skills : ');
+      console.log(skills);
 
-      console.log('Skills: ')
-      console.log(skills)
 
       // use map to convert IResponseItem[] into our internal object IFile[]
       const items: IFile[] = response.map((item: IResponseItem) => {        
@@ -196,39 +157,6 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
         };
       });
 
-      //const client = new SPHttpClient()
-      /*var url = "https://pyvuep8tnv.eu-central-1.awsapprunner.com/skill"
-      this.context.SPHttpClient.get(url, {
-        headers:{
-          "Accept" : "application/json"
-        }
-      })
-      .then((response))
-      */
-
-      /*const url = "https://prod-223.westeurope.logic.azure.com:443/workflows/9bf2ce74c8924ff2902ad9d13a48f309/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Drt1htXNP1pxhKEhXMehbNNrQcqKAva2d1dDKvUzItM"
-      const url = "https://pyvuep8tnv.eu-central-1.awsapprunner.com/skill"
-
-      let httpReq = new XMLHttpRequest();
-      httpReq.open("GET", url, false);
-      httpReq.send(null);
-      console.log(httpReq.responseText);
-      */
-      /*fetch(url1, {
-        headers:{
-          //'Accept': 'application/json',
-          //'Access-Control-Allow-Origin': 'https://3nergy.sharepoint.com/',
-          //'Origin': 'https://3nergy.sharepoint.com/',
-          'Access-Control-Request-Method': 'GET',
-          //'Access-Control-Allow-Credentials': 'true'
-        }
-      })
-        .then(response => response.text)
-        .then(text => console.log(text)) 
-        */
-
-      
-
       // Add the items to the state
       this.setState({ items, userUpn, profile, skills });
     } catch (err) {
@@ -237,55 +165,56 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
     }
   }
 
-  private loadProfile(upn: string, mock: boolean): IProfile{
-    let strProfile: string = "";
+  private loadProfile = async (upn: string): Promise<IProfile> => {
 
-    if(this.state.isMock){
-      strProfile = '{"upn":"adam.pavlik@exxeta.com","employee":{"firstName":"Adam","lastName":"Pavlik","managerUpn":null,"birthday":null},"tags":[],"skills":[{"skillId":"Java","type":"KNOWLEDGE","value":"advanced"}],"roles":[{"role":{"name":"Architect"},"primaryRole":true}],"employeeRelations":[{"targetUpn":"viktor.fres@exxeta.com","relationType":"teaches"}]}';
-    }
-    else{
-      // TODO: load user profile from a web service
-      strProfile = '{"upn":"thomas.pohl@exxeta.com","employee":{"firstName":"Thomas","lastName":"Pohl","managerUpn":null,"birthday":null},"tags":[],"skills":[{"skillId":"Java","type":"KNOWLEDGE","value":"advanced"}],"roles":[{"role":{"name":"Architect"},"primaryRole":true}],"employeeRelations":[{"targetUpn":"viktor.fres@exxeta.com","relationType":"teaches"}]}';
-    }
+    const url = "https://frhbvmm4yk.eu-central-1.awsapprunner.com/profile/" + upn
 
-    const profileJSON = JSON.parse(strProfile);
-
-    var profileSkills: ISkill[] = [];
-
-    if(profileJSON.skills.length > 0){
-      profileJSON.skills.forEach(
-        function(e:any, i:number){
-          //console.log(i + ' - ' + e.skillId + ' ' + e.value);
-          profileSkills.push({
-            Id: e.skillId,
-            Level: e.value
-          })
-        })
-    }
+    const response: Response = await fetch(url, {
+      headers:{
+        'Accept': 'application/json',
+        'Origin': 'https://3nergy.sharepoint.com/',
+        'Access-Control-Request-Method': 'GET',
+      }
+    })
     
-    var profile: IProfile ={
-      Upn: profileJSON.upn,
-      FirstName: profileJSON.employee.firstName,
-      LastName: profileJSON.employee.lastName,
-      Skills: profileSkills
-    }
-
-    return profile;
+        const profileJSON = await response.json();
+        var profileSkills: ISkill[] = [];
+    
+        if(profileJSON.skills.length > 0){
+          profileJSON.skills.forEach(
+            function(e:any, i:number){
+              //console.log(i + ' - ' + e.skillId + ' ' + e.value);
+              profileSkills.push({
+                Id: e.skillId,
+                Level: e.value
+              })
+            })
+        }
+        
+        var profile: IProfile ={
+          Upn: profileJSON.upn,
+          FirstName: profileJSON.employee.firstName,
+          LastName: profileJSON.employee.lastName,
+          Skills: profileSkills
+        }
+    
+        return new Promise<IProfile>(resolve => resolve(profile));
   }
 
-  private loadAllSkills(mock: boolean): ISkill[]{
+  private loadAllSkills = async(): Promise<ISkill[]> => {
     var skills: ISkill[] = [];
 
-    var strSkills = '';
+    const url = 'https://pyvuep8tnv.eu-central-1.awsapprunner.com/skill'
 
-    if(mock){
-      strSkills = '[{"id":"1","name":"Java","tags":[{"type":"category","value":"programming language"}],"replacedBy":null},{"id":"2","name":"Python","tags":[{"type":"category","value":"programming language"}],"replacedBy":null},{"id":"3","name":"MS Word","tags":[{"type":"category","value":"standard software"}],"replacedBy":null},{"id":"4","name":"MS Excel","tags":[{"type":"category","value":"standard software"}],"replacedBy":null}]';
-    }
-    else{
-      // TODO: load skills from a web service
-    }
-
-    const skillsJSON = JSON.parse(strSkills);
+    const response: Response = await fetch(url, {
+      headers:{
+        'Accept': 'application/json',
+        'Origin': 'https://3nergy.sharepoint.com/',
+        'Access-Control-Request-Method': 'GET',
+      }
+    })
+    
+    const skillsJSON = await response.json();
 
     skillsJSON.forEach(function(e:any){
       skills.push({
@@ -294,20 +223,17 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
       });
     });
 
-    return skills;
-
+    return new Promise(resolve => resolve(skills));
   }
   
   private onNewSkillClick(): void{
-    //var newSkillName = document.getElementById('newSkillName');
-    //var newSkillName = React.findDOMNode(this.refs.cpDev1).value
-    //debugger;
     console.log('Addingnew skill  ' + this.state.newSkillName + ' to profile');
 
     this.state.profile.Skills.push({
       Id: this.state.newSkillName,
       Level: 'Novice'
     });
+
     this.setState({profile: {
         Upn: this.state.profile.Upn,
         FirstName: this.state.profile.FirstName,
@@ -319,6 +245,11 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
   private skillChangeHandler(e:any): void{
     this.setState({newSkillName: e.target.value})
     console.log(e.target.value);
+  }
+
+  private btnSaveClicked(e:any): void{
+    console.log('Saving the profile: ')
+    //console.log('   - Name: ' + this.state.profile.FirstName +
   }
 
   private getQueryStringParam(name: string): string{
