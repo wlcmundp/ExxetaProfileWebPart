@@ -23,7 +23,6 @@ export interface IIPnPjsExampleState {
   skills: ISkill[],
   isOwnProfile: boolean;
   newSkillName: string;
-  //isMock: boolean;
   errors: string[];
 }
 
@@ -47,14 +46,15 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
       skills: [],      
       isOwnProfile: false,
       newSkillName: '',
-      //isMock: true,
       errors: [],
     };
     this._sp = getSP();
 
     this.onNewSkillClick = this.onNewSkillClick.bind(this);
-    this.skillChangeHandler = this.skillChangeHandler.bind(this);
     this.btnSaveClicked = this.btnSaveClicked.bind(this);
+    this.btnRemoveSkillClicked = this.btnRemoveSkillClicked.bind(this);
+    
+    this.onSkillChange = this.onSkillChange.bind(this);
   }
 
   public componentDidMount(): void {
@@ -64,6 +64,9 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
 
   public render(): React.ReactElement<IAsyncAwaitPnPJsProps> {
 
+    
+
+
     return (
       <div className={styles.userProfile}>
         
@@ -71,7 +74,7 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
           <h2>Profile</h2>
           <label>UPN</label>:<span>{this.state.userUpn}</span>
           <br />
-          <label>Name</label>:<span>{this.state.profile.FirstName} {this.state.profile.LastName}</span>
+          <label>Hello </label>:<span>{this.state.profile.FirstName} {this.state.profile.LastName}</span>
           <br />
         </div>
 
@@ -80,25 +83,32 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
           {
             this.state.profile.Skills.map((item, index) => {
               return(
-                <p>{item.Id} : {item.Level}</p>
+                <div>
+                  <label>{item.Id} : {item.Level}</label>
+                  <button type="button" value={item.Id} onClick={this.btnRemoveSkillClicked}>- Remove</button>
+
+                </div>
               )
             })
           }
         </div>
 
         <div>
-          <label>Add a new Skill</label>:<input type="text" id="newSkillName" value={this.state.newSkillName} onChange={this.skillChangeHandler} ></input>
-          <button onClick={this.onNewSkillClick}>+ Add</button>
-        </div>
-
-        <div>
-          <h2>All Skills</h2>
+          <select value={this.state.newSkillName} onChange={this.onSkillChange}>
+            <option value=""></option>
           {
             this.state.skills.map((item, index) => {
-              return( 
-                <p>{item.Id}</p>                
-              )
-            })
+              if ( !(this.state.profile.Skills.find(skill => skill.Id == item.Id))){
+                return( 
+                  <option value={item.Id}>{item.Id}</option>
+                  )
+                }
+              })
+            }
+          
+          </select>
+          {
+            this.state.newSkillName && (<button onClick={this.onNewSkillClick}>+ Add</button>)
           }
         </div>
         <div>
@@ -238,6 +248,13 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
 
     return new Promise(resolve => resolve(skills));
   }
+
+  private onSkillChange = (e:any): void => {
+    const skillId = e.target.value;
+    console.log('Skill chosen: ' + skillId);
+
+    this.setState({newSkillName: skillId})
+  }
   
   private onNewSkillClick(): void{
     console.log('Addingnew skill  ' + this.state.newSkillName + ' to profile');
@@ -253,11 +270,6 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
         LastName: this.state.profile.LastName,
         Skills: this.state.profile.Skills
     }})
-  }
-
-  private skillChangeHandler(e:any): void{
-    this.setState({newSkillName: e.target.value})
-    console.log(e.target.value);
   }
 
   private btnSaveClicked(e:any): void{
@@ -315,6 +327,22 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
 
   }
 
+  private btnRemoveSkillClicked(e:any): void{
+    const skillId = e.target.value;
+    console.log('Deleting the skill: ' + skillId);
+
+    this.state.profile.Skills = this.state.profile.Skills.filter(function(item){
+      return item.Id != skillId;
+    });
+
+    this.setState({profile: {
+      Upn: this.state.profile.Upn,
+      FirstName: this.state.profile.FirstName,
+      LastName: this.state.profile.LastName,
+      Skills: this.state.profile.Skills
+  }})
+  }
+  
   private getQueryStringParam(name: string): string{
     const urlParams = new URLSearchParams(window.location.search);
     const myParam = urlParams.get(name)
