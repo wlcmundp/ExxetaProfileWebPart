@@ -12,6 +12,8 @@ declare interface IUserProfileWebPartStrings {
   AppOutlookEnvironment: string;
 }
 
+declare module '*.module.scss'
+
 declare module 'UserProfileWebPartStrings' {
   const strings: IUserProfileWebPartStrings;
   export = strings;

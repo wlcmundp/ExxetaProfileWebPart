@@ -1,0 +1,24 @@
+//@import '@assets/styles/variables.module.scss';
+
+.radioGroup {
+  display: flex;
+  flex-direction: column;
+
+  .radioLabel {
+    margin-bottom: 0;
+    display: inline;
+    //color: $grey-7;
+
+    &:not(:last-child) {
+      margin-bottom: 16px;
+    }
+
+    img {
+      margin-left: 22px;
+    }
+  }
+
+  .radioInput {
+    margin-right: 8px;
+  }
+}

@@ -1,0 +1,40 @@
+//@import '@assets/styles/variables.module.scss';
+
+.levelPickerContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  .skillLevelLabel {
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  .levelList {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    .levelDot {
+      width: 16px;
+      height: 16px;
+      margin-right: 16px;
+      //background-color: $grey-3;
+      border-radius: 100%;
+      list-style: none;
+
+      cursor: pointer;
+
+      &.active {
+        //background: $secondMain;
+      }
+    }
+  }
+}
+
+.marginForTitle {
+  margin-left: 20px;
+}
+.marginForLevelList {
+  margin-left: 16px;
+}

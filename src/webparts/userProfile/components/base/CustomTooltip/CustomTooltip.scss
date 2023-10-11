@@ -1,0 +1,32 @@
+//@import '@assets/styles/variables.module.scss';
+
+.tooltip-inner {
+  width: 148px;
+  padding: 13px 10px;
+  border-radius: 0px !important;
+  //background: $secondMain !important;
+  opacity: 1 !important;
+
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphens: auto;
+}
+
+.tooltip {
+  opacity: 1 !important;
+  .tooltip-arrow {
+    right: 50%;
+    left: -1px;
+    transform: translate(-50%, 0px);
+  }
+}
+
+.variableWidthTooltip {
+  .tooltip-inner {
+    width: initial;
+    max-width: 100%;
+  }
+}
