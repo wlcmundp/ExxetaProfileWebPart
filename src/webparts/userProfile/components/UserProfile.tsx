@@ -80,12 +80,15 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
 
         <div>
           <h2>Fahigkeiten</h2> 
+          
           {
             this.state.profile.Skills.map((item, index) => {
               return(
                 <div>
                   <label>{item.Id} : {item.Level}</label>
-                  <button type="button" value={item.Id} onClick={this.btnRemoveSkillClicked}>- Remove</button>
+                  {
+                    this.state.isOwnProfile && ( <button type="button" value={item.Id} onClick={this.btnRemoveSkillClicked}>- Remove</button>)
+                  }
 
                 </div>
               )
@@ -93,27 +96,36 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
           }
         </div>
 
-        <div>
-          <select value={this.state.newSkillName} onChange={this.onSkillChange}>
-            <option value=""></option>
           {
-            this.state.skills.map((item, index) => {
-              if ( !(this.state.profile.Skills.find(skill => skill.Id == item.Id))){
-                return( 
-                  <option value={item.Id}>{item.Id}</option>
-                  )
+            this.state.isOwnProfile && (
+              <div>
+                <select value={this.state.newSkillName} onChange={this.onSkillChange}>
+                  <option value=""></option>
+                {
+                  this.state.skills.map((item, index) => {
+                    if ( !(this.state.profile.Skills.find(skill => skill.Id == item.Id))){
+                      return( 
+                        <option value={item.Id}>{item.Id}</option>
+                        )
+                      }
+                    })
+                  }
+                
+                </select>
+                {
+                  this.state.newSkillName && (<button onClick={this.onNewSkillClick}>+ Add</button>)
                 }
-              })
-            }
-          
-          </select>
-          {
-            this.state.newSkillName && (<button onClick={this.onNewSkillClick}>+ Add</button>)
+              </div>
+            )
           }
-        </div>
-        <div>
-          <button type="button" onClick={this.btnSaveClicked} >Save Profile</button>
-        </div>
+        {
+          this.state.isOwnProfile && (
+            <div>
+              <button type="button" onClick={this.btnSaveClicked} >Save Profile</button>
+            </div>
+          )
+        }
+        
       </div >
     );
   }
@@ -141,7 +153,8 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
       const userUpn = respProfile.UserPrincipalName;
       const profileQsParam = this.getQueryStringParam('profile');
       
-      if(respProfile.UserPrincipalName == (profileQsParam + '@exxeta.com')){
+      const isOwnProfile = (respProfile.UserPrincipalName == (profileQsParam + '@exxeta.com')) ? true : false ;
+      if(isOwnProfile){
         console.log('Success: this is the profile page of the current user')
       }
       else{
@@ -168,7 +181,12 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
       });
 
       // Add the items to the state
-      this.setState({ items, userUpn, profile, skills });
+      this.setState({ 
+        items: items, 
+        userUpn: userUpn, 
+        profile: profile, 
+        skills: skills,
+        isOwnProfile: isOwnProfile });
     } catch (err) {
       console.log('User Profile Exception: ' + err);
       Logger.write(`${this.LOG_SOURCE} (_readAllFilesSize) - ${JSON.stringify(err)} - `, LogLevel.Error);
