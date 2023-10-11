@@ -9,11 +9,20 @@
           "manifest": "./src/webparts/userProfile/UserProfileWebPart.manifest.json"
         }
       ]
+    },
+    "user-profile-link-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/userProfileLink/UserProfileLinkWebPart.js",
+          "manifest": "./src/webparts/userProfileLink/UserProfileLinkWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
   "localizedResources": {
     "UserProfileWebPartStrings": "lib/webparts/userProfile/loc/{locale}.js",
-    "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js"
+    "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js",
+    "UserProfileLinkWebPartStrings": "lib/webparts/userProfileLink/loc/{locale}.js"
   }
 }

@@ -5,7 +5,7 @@ import { IUserProfileProps } from './IUserProfileProps';
 // import interfaces
 import { IFile, IProfile, ISkill, IResponseItem } from "./interfaces";
 import { Caching } from "@pnp/queryable";
-import { getSP } from "../pnpjsConfig";
+import { getSP } from "../../pnpJsConfigX";
 import { SPFI, spfi } from "@pnp/sp";
 import { Logger, LogLevel } from "@pnp/logging";
 import '@microsoft/sp-core-library';
@@ -138,7 +138,7 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
         console.log('Fail: this is NOT the profile page of the current user')
       }
 
-      const profile = await this.loadProfile('thomas.pohl@exxeta.com')//userUpn);
+      const profile = await this.loadProfile(userUpn);
       console.log('Profile : ');
       console.log(profile);
       
@@ -169,36 +169,49 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
 
     const url = "https://frhbvmm4yk.eu-central-1.awsapprunner.com/profile/" + upn
 
-    const response: Response = await fetch(url, {
-      headers:{
-        'Accept': 'application/json',
-        'Origin': 'https://3nergy.sharepoint.com/',
-        'Access-Control-Request-Method': 'GET',
-      }
-    })
-    
-        const profileJSON = await response.json();
-        var profileSkills: ISkill[] = [];
-    
-        if(profileJSON.skills.length > 0){
-          profileJSON.skills.forEach(
-            function(e:any, i:number){
-              //console.log(i + ' - ' + e.skillId + ' ' + e.value);
-              profileSkills.push({
-                Id: e.skillId,
-                Level: e.value
+    try{
+
+      const response: Response = await fetch(url, {
+        headers:{
+          'Accept': 'application/json',
+          'Origin': 'https://3nergy.sharepoint.com/',
+          'Access-Control-Request-Method': 'GET',
+        }
+      })
+      
+          const profileJSON = await response.json();
+          var profileSkills: ISkill[] = [];
+      
+          if(profileJSON.skills.length > 0){
+            profileJSON.skills.forEach(
+              function(e:any, i:number){
+                //console.log(i + ' - ' + e.skillId + ' ' + e.value);
+                profileSkills.push({
+                  Id: e.skillId,
+                  Level: e.value
+                })
               })
-            })
-        }
-        
-        var profile: IProfile ={
-          Upn: profileJSON.upn,
-          FirstName: profileJSON.employee.firstName,
-          LastName: profileJSON.employee.lastName,
-          Skills: profileSkills
-        }
-    
-        return new Promise<IProfile>(resolve => resolve(profile));
+          }
+          
+          var profile: IProfile ={
+            Upn: profileJSON.upn,
+            FirstName: profileJSON.employee.firstName,
+            LastName: profileJSON.employee.lastName,
+            Skills: profileSkills
+          }
+      
+          return new Promise<IProfile>(resolve => resolve(profile));
+    }
+    catch(err){
+      var profile: IProfile ={
+        Upn: upn,
+        FirstName: '',
+        LastName: '',
+        Skills: []
+      }
+      return new Promise<IProfile>(resolve => resolve(profile));
+    }
+
   }
 
   private loadAllSkills = async(): Promise<ISkill[]> => {
@@ -249,7 +262,57 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
 
   private btnSaveClicked(e:any): void{
     console.log('Saving the profile: ')
-    //console.log('   - Name: ' + this.state.profile.FirstName +
+    console.log('   - Name: ' + this.state.profile.FirstName + this.state.profile.LastName);
+    console.log('   - UPN: ' + this.state.profile.Upn)
+
+    const url:string = 'https://frhbvmm4yk.eu-central-1.awsapprunner.com/profile/' + this.state.profile.Upn;
+
+    const jsonData = {
+      "upn": this.state.profile.Upn,//"adam.pavlik@exxeta.com",
+      "employee": {
+        "firstName": "Adam",
+        "lastName": "Pavlik",
+        "managerUpn": '',
+        "birthday": ''
+      },
+      //"tags": [],
+      "skills": [
+        {
+          "skillId": "Java",
+          "type": "KNOWLEDGE",
+          "value": "advanced"
+        }
+      ],
+      "roles": [
+        {
+          "role": {
+            "name": "Architect"
+          },
+          "primaryRole": true
+        }
+      ],
+      "employeeRelations": [
+        {
+          "targetUpn": "viktor.fres@exxeta.com",
+          "relationType": "teaches"
+        }
+      ]
+    }
+
+    try{
+      fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-type': 'application/json'
+        },
+        body: JSON.stringify(jsonData)
+      })
+      .then(data => console.log(data));
+    }
+    catch(err){
+      console.log('User profile save error: ' + err);
+    }
+
   }
 
   private getQueryStringParam(name: string): string{

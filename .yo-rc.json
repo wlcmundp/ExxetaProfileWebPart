@@ -1,7 +1,7 @@
 {
   "@microsoft/generator-sharepoint": {
     "plusBeta": false,
-    "isCreatingSolution": true,
+    "isCreatingSolution": false,
     "nodeVersion": "20.1.0",
     "sdksVersions": {
       "@microsoft/microsoft-graph-client": "3.0.2",
@@ -16,6 +16,8 @@
     "solutionShortDescription": "exxeta-profile-web-part description",
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,
-    "componentType": "webpart"
+    "componentType": "webpart",
+    "template": "react",
+    "componentName": "UserProfileLink"
   }
 }

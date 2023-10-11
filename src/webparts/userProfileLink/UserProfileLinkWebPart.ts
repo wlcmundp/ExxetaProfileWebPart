@@ -8,23 +8,23 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
-import * as strings from 'UserProfileWebPartStrings';
-import UserProfile from './components/UserProfile';
-import { IUserProfileProps } from './components/IUserProfileProps';
+import * as strings from 'UserProfileLinkWebPartStrings';
+import UserProfileLink from './components/UserProfileLink';
+import { IUserProfileLinkProps } from './components/IUserProfileLinkProps';
 import {getSP} from '../pnpJsConfigX';
 
-export interface IUserProfileWebPartProps {
+export interface IUserProfileLinkWebPartProps {
   description: string;
 }
 
-export default class UserProfileWebPart extends BaseClientSideWebPart<IUserProfileWebPartProps> {
+export default class UserProfileLinkWebPart extends BaseClientSideWebPart<IUserProfileLinkWebPartProps> {
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
   public render(): void {
-    const element: React.ReactElement<IUserProfileProps> = React.createElement(
-      UserProfile,
+    const element: React.ReactElement<IUserProfileLinkProps> = React.createElement(
+      UserProfileLink,
       {
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
@@ -38,9 +38,6 @@ export default class UserProfileWebPart extends BaseClientSideWebPart<IUserProfi
   }
 
   public async onInit(): Promise<void> {
-    //return this._getEnvironmentMessage().then(message => {
-    //  this._environmentMessage = message;
-    //});
     this._environmentMessage = await this._getEnvironmentMessage();
 
     await super.onInit();
@@ -53,7 +50,7 @@ export default class UserProfileWebPart extends BaseClientSideWebPart<IUserProfi
 
 
   private _getEnvironmentMessage(): Promise<string> {
-    if (!!this.context.sdks.microsoftTeams) { // running in Teams, office.com or Ou tlook
+    if (!!this.context.sdks.microsoftTeams) { // running in Teams, office.com or Outlook
       return this.context.sdks.microsoftTeams.teamsJs.app.getContext()
         .then(context => {
           let environmentMessage: string = '';
