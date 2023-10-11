@@ -79,8 +79,7 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
         </div>
 
         <div>
-          <h2>Fahigkeiten</h2> 
-          
+          <h2>Fahigkeiten</h2>          
           {
             this.state.profile.Skills.map((item, index) => {
               return(
@@ -89,13 +88,11 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
                   {
                     this.state.isOwnProfile && ( <button type="button" value={item.Id} onClick={this.btnRemoveSkillClicked}>- Remove</button>)
                   }
-
                 </div>
               )
             })
           }
         </div>
-
           {
             this.state.isOwnProfile && (
               <div>
@@ -109,8 +106,7 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
                         )
                       }
                     })
-                  }
-                
+                  }                
                 </select>
                 {
                   this.state.newSkillName && (<button onClick={this.onNewSkillClick}>+ Add</button>)
@@ -124,8 +120,7 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
               <button type="button" onClick={this.btnSaveClicked} >Save Profile</button>
             </div>
           )
-        }
-        
+        }        
       </div >
     );
   }
@@ -300,33 +295,35 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
     const jsonData = {
       "upn": this.state.profile.Upn,//"adam.pavlik@exxeta.com",
       "employee": {
-        "firstName": "Adam",
-        "lastName": "Pavlik",
+        "firstName": this.state.profile.FirstName,
+        "lastName": this.state.profile.LastName,
         "managerUpn": '',
         "birthday": ''
       },
       //"tags": [],
-      "skills": [
-        {
-          "skillId": "Java",
-          "type": "KNOWLEDGE",
-          "value": "advanced"
-        }
-      ],
-      "roles": [
-        {
-          "role": {
-            "name": "Architect"
-          },
-          "primaryRole": true
-        }
-      ],
-      "employeeRelations": [
-        {
-          "targetUpn": "viktor.fres@exxeta.com",
-          "relationType": "teaches"
-        }
-      ]
+      "skills": 
+        this.state.profile.Skills.map(function(item){
+          return {
+            "skillId": item.Id,
+            "type": "KNOWLEDGE",
+            "value": "advanced"
+          }
+        }),
+
+      // "roles": [
+      //   {
+      //     "role": {
+      //       "name": "Architect"
+      //     },
+      //     "primaryRole": true
+      //   }
+      // ],
+      // "employeeRelations": [
+      //   {
+      //     "targetUpn": "viktor.fres@exxeta.com",
+      //     "relationType": "teaches"
+      //   }
+      // ]
     }
 
     try{
