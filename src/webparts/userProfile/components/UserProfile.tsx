@@ -50,6 +50,8 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
     };
     this._sp = getSP();
 
+    this.onFirstNameChange = this.onFirstNameChange.bind(this);
+    this.onLastNameChange = this.onLastNameChange.bind(this);
     this.onNewSkillClick = this.onNewSkillClick.bind(this);
     this.btnSaveClicked = this.btnSaveClicked.bind(this);
     this.btnRemoveSkillClicked = this.btnRemoveSkillClicked.bind(this);
@@ -75,32 +77,17 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
           <label>UPN</label>:<span>{this.state.userUpn}</span>
           <br />
           <label>Hello </label>:<span>{this.state.profile.FirstName} {this.state.profile.LastName}</span>
+          <div>
+            <label>First Name</label>: <input type="text" onChange={this.onFirstNameChange} value={this.state.profile.FirstName} ></input>
+          </div>
+          <div>
+            <label>Last Name</label>: <input type="text" onChange={this.onLastNameChange} value={this.state.profile.LastName} ></input>
+          </div>
           <br />
         </div>
 
         <div>
           <h2>Fahigkeiten</h2>          
-          {
-            this.state.profile.Skills.map((item, index) => {
-              return(
-                <div className={styles.skill}>
-                  <label className={styles.skillElem}>{item.Id} : {item.Level}</label>
-                  <div className={styles.skillElem} onChange={this.onSkillLevelChange}>
-                    <input type="radio" checked={item.Level == "basic"} value="basic" name={"skillLevel_" + item.Id} />Knowledge
-                    <br />
-                    <input type="radio" checked={item.Level == "experienced"} value="experienced" name={"skillLevel_" + item.Id} />Experience
-                    <br />
-                    <input type="radio" checked={item.Level == "advanced"} value="advanced" name={"skillLevel_" + item.Id} />Expert
-                  </div>
-                  {
-                    this.state.isOwnProfile && ( <button className={styles.skillElem} type="button" value={item.Id} onClick={this.btnRemoveSkillClicked}>- Remove</button>)
-                  }
-                </div>
-                
-              )
-            })
-          }
-        </div>
           {
             this.state.isOwnProfile && (
               <div>
@@ -122,6 +109,27 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
               </div>
             )
           }
+          {
+            this.state.profile.Skills.map((item, index) => {
+              return(
+                <div className={styles.skill}>
+                  <label className={styles.skillElem}>{item.Id} : {item.Level}</label>
+                  <div className={styles.skillElem} onChange={this.onSkillLevelChange}>
+                    <input type="radio" checked={item.Level == "basic"} value="basic" name={"skillLevel_" + item.Id} />Knowledge
+                    <br />
+                    <input type="radio" checked={item.Level == "experienced"} value="experienced" name={"skillLevel_" + item.Id} />Experience
+                    <br />
+                    <input type="radio" checked={item.Level == "advanced"} value="advanced" name={"skillLevel_" + item.Id} />Expert
+                  </div>
+                  {
+                    this.state.isOwnProfile && ( <button className={styles.skillElem} type="button" value={item.Id} onClick={this.btnRemoveSkillClicked}>- Remove</button>)
+                  }
+                </div>
+                
+              )
+            })
+          }
+        </div>
         {
           this.state.isOwnProfile && (
             <div>
@@ -270,6 +278,34 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
     return new Promise(resolve => resolve(skills));
   }
 
+  private onFirstNameChange = (e:any):void => {
+    const firstName = e.target.value;
+
+    this.setState(
+      {
+        profile: {
+        Upn: this.state.profile.Upn,
+        FirstName: firstName,
+        LastName: this.state.profile.LastName,
+        Skills: this.state.profile.Skills
+      }
+    });
+  }
+
+  private onLastNameChange = (e:any):void => {
+    const lastName = e.target.value;
+
+    this.setState(
+      {
+        profile: {
+        Upn: this.state.profile.Upn,
+        FirstName: this.state.profile.FirstName,
+        LastName: lastName,
+        Skills: this.state.profile.Skills
+      }
+    });
+  }
+
   private onSkillChange = (e:any): void => {
     const skillId = e.target.value;
     console.log('Skill chosen: ' + skillId);
@@ -297,15 +333,19 @@ export default class PnPjsExample extends React.Component<IUserProfileProps, IIP
 
     this.state.profile.Skills.push({
       Id: this.state.newSkillName,
-      Level: 'Novice'
+      Level: 'basic'
     });
 
-    this.setState({profile: {
+    this.setState(
+      {
+        profile: {
         Upn: this.state.profile.Upn,
         FirstName: this.state.profile.FirstName,
         LastName: this.state.profile.LastName,
         Skills: this.state.profile.Skills
-    }})
+      },
+      newSkillName: ""
+    })
   }
 
   private btnSaveClicked(e:any): void{
